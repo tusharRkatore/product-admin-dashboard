@@ -12,5 +12,8 @@
     "accessibility.signals.lineHasInlineSuggestion": {
         "sound": "on"
     },
-    "workbench.statusBar.visible": true
+    "workbench.statusBar.visible": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+    "editor.guides.bracketPairs": true
 }
