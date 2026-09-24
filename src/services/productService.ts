@@ -19,8 +19,13 @@ export interface ProductsResponse {
   limit: number;
 }
 
-export const getProducts = async (): Promise<ProductsResponse> => {
-  const response = await api.get<ProductsResponse>("/products");
+export const getProducts = async (
+  limit = 10,
+  skip = 0
+): Promise<ProductsResponse> => {
+  const response = await api.get<ProductsResponse>(
+    `/products?limit=${limit}&skip=${skip}`
+  );
 
   return response.data;
 };

@@ -9,8 +9,16 @@ import { getProducts, Product } from "../../services/productService";
 export default function ProductsPage() {
   const router = useRouter();
 
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const [products, setProducts] = useState<Product[]>([]);
+const [isLoading, setIsLoading] = useState(true);
+
+const [currentPage, setCurrentPage] = useState(1);
+const [pageSize, setPageSize] = useState(10);
+const [totalProducts, setTotalProducts] = useState(0);
+const totalPages = Math.ceil(totalProducts / pageSize);
+const startItem =
+  totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
+const endItem = Math.min(currentPage * pageSize, totalProducts);
 
   const handleLogout = () => {
     removeToken();
@@ -18,17 +26,23 @@ export default function ProductsPage() {
   };
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const data = await getProducts();
-        setProducts(data.products);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    setIsLoading(true);
 
-    fetchProducts();
-  }, []);
+    try {
+      const skip = (currentPage - 1) * pageSize;
+
+      const data = await getProducts(pageSize, skip);
+
+      setProducts(data.products);
+      setTotalProducts(data.total);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, [currentPage, pageSize]);
 
   return (
     <ProtectedRoute>
@@ -154,6 +168,69 @@ export default function ProductsPage() {
               </table>
             </div>
           )}
+          <div className="mt-6 flex flex-col gap-4 rounded-lg bg-white p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+  <div className="text-sm text-gray-600">
+    Showing {startItem}–{endItem} of {totalProducts}
+  </div>
+
+  <div className="flex flex-wrap items-center gap-2">
+    <label
+      htmlFor="pageSize"
+      className="text-sm font-medium text-gray-700"
+    >
+      Per page:
+    </label>
+
+    <select
+      id="pageSize"
+      value={pageSize}
+      onChange={(event) => {
+        setPageSize(Number(event.target.value));
+        setCurrentPage(1);
+      }}
+      className="rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-700 outline-none focus:border-blue-500"
+    >
+      <option value={10}>10</option>
+      <option value={20}>20</option>
+      <option value={50}>50</option>
+    </select>
+
+    <button
+      type="button"
+      onClick={() => setCurrentPage((page) => page - 1)}
+      disabled={currentPage === 1}
+      className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      Previous
+    </button>
+
+    {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+      (page) => (
+        <button
+          key={page}
+          type="button"
+          onClick={() => setCurrentPage(page)}
+          className={`rounded-lg px-3 py-2 text-sm font-medium ${
+            currentPage === page
+              ? "bg-blue-600 text-white"
+              : "border border-gray-300 text-gray-700"
+          }`}
+        >
+          {page}
+        </button>
+      )
+    )}
+
+    <button
+      type="button"
+      onClick={() => setCurrentPage((page) => page + 1)}
+      disabled={currentPage === totalPages}
+      className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 disabled:cursor-not-allowed disabled:opacity-40"
+    >
+      Next
+    </button>
+  </div>
+</div>
         </div>
       </main>
     </ProtectedRoute>
