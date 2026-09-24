@@ -56,7 +56,56 @@ export default function ProductsPage() {
               <p className="text-gray-600">Loading products...</p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg bg-white shadow-sm">
+            <div className="hidden overflow-x-auto rounded-lg bg-white shadow-sm md:block">
+              <div className="grid gap-4 md:hidden">
+  {products.map((product) => (
+    <div
+      key={product.id}
+      className="rounded-lg bg-white p-4 shadow-sm"
+    >
+      <div className="flex items-center gap-4">
+        <img
+          src={product.thumbnail}
+          alt={product.title}
+          className="h-16 w-16 rounded object-cover"
+        />
+
+        <div className="min-w-0">
+          <h2 className="truncate font-semibold text-gray-900">
+            {product.title}
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-500">
+            {product.category}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-3 border-t pt-4">
+        <div>
+          <p className="text-xs text-gray-500">Price</p>
+          <p className="font-medium text-gray-900">
+            ${product.price}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">Rating</p>
+          <p className="font-medium text-gray-900">
+            {product.rating}
+          </p>
+        </div>
+
+        <div>
+          <p className="text-xs text-gray-500">Stock</p>
+          <p className="font-medium text-gray-900">
+            {product.stock}
+          </p>
+        </div>
+      </div>
+    </div>
+  ))}
+</div>
               <table className="w-full min-w-[800px] text-gray-800">
                 <thead className="bg-gray-100 text-gray-900">
                   <tr>
