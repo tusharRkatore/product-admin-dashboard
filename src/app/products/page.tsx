@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { removeToken } from "../../lib/auth";
 import {
@@ -19,6 +19,7 @@ const [currentPage, setCurrentPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
 const [totalProducts, setTotalProducts] = useState(0);
 const [searchQuery, setSearchQuery] = useState("");
+const requestIdRef = useRef(0);
 const totalPages = Math.ceil(totalProducts / pageSize);
 const startItem =
   totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -36,10 +37,12 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
 
       try {
         const skip = (currentPage - 1) * pageSize;
+        const requestId = ++requestIdRef.current;
 
         const data = searchQuery.trim()
           ? await searchProducts(searchQuery.trim(), pageSize, skip)
           : await getProducts(pageSize, skip);
+          
 
         setProducts(data.products);
         setTotalProducts(data.total);
