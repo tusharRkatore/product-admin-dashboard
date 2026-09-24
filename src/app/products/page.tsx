@@ -179,7 +179,13 @@ useEffect(() => {
 
         <div className="min-w-0">
           <h2 className="truncate font-semibold text-gray-900">
-            {product.title}
+            <button
+  type="button"
+  onClick={() => router.push(`/products/${product.id}`)}
+  className="text-left font-medium text-blue-600 hover:underline"
+>
+  {product.title}
+</button>
           </h2>
 
           <p className="mt-1 text-sm text-gray-500">
