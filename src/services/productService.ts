@@ -42,16 +42,17 @@ export const getProductsByCategory = async (
 
   return response.data;
 };
+export const getSortedProducts = async (
+  sortBy: "price" | "rating" | "title",
+  limit = 10,
+  skip = 0
+): Promise<ProductsResponse> => {
+  const response = await api.get<ProductsResponse>(
+    `/products?sortBy=${sortBy}&order=asc&limit=${limit}&skip=${skip}`
+  );
 
-
-
-
-
-
-
-
-
-
+  return response.data;
+};
        
 export const searchProducts = async (
   query: string,

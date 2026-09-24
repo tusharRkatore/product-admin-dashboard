@@ -8,6 +8,7 @@ import {
   getCategories,
   getProducts,
   getProductsByCategory,
+  getSortedProducts,
   Product,
   searchProducts,
 } from "../../services/productService";
@@ -27,6 +28,7 @@ const [categories, setCategories] = useState<
   { slug: string; name: string; url: string }[]
 >([]);
 const [selectedCategory, setSelectedCategory] = useState("");
+const [sortBy, setSortBy] = useState("");
 const totalPages = Math.ceil(totalProducts / pageSize);
 const startItem =
   totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -64,9 +66,17 @@ useEffect(() => {
   ? await getProductsByCategory(selectedCategory, pageSize, skip)
   : searchQuery.trim()
     ? await searchProducts(searchQuery.trim(), pageSize, skip)
-    : await getProducts(pageSize, skip);
+    : sortBy
+      ? await getSortedProducts(
+          sortBy as "price" | "rating" | "title",
+          pageSize,
+          skip
+        )
+      : await getProducts(pageSize, skip);
           if (requestId !== requestIdRef.current) {
   return;
+
+
 }
 
         setProducts(data.products);
@@ -80,7 +90,7 @@ useEffect(() => {
   }, 500);
 
   return () => clearTimeout(timer);
-}, [currentPage, pageSize, searchQuery]);
+}, [currentPage, pageSize, searchQuery, selectedCategory, sortBy]);
 
   return (
     <ProtectedRoute>
@@ -110,7 +120,19 @@ useEffect(() => {
     {category.name}
   </option>
 ))}</select>
-
+<select
+  value={sortBy}
+  onChange={(event) => {
+    setSortBy(event.target.value);
+    setCurrentPage(1);
+  }}
+  className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+>
+  <option value="">Sort By</option>
+  <option value="price">Price</option>
+  <option value="rating">Rating</option>
+  <option value="title">Title</option>
+</select>
     {/* Search */}
     <input
       type="search"
