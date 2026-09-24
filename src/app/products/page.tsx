@@ -4,8 +4,11 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { removeToken } from "../../lib/auth";
-import { getProducts, Product } from "../../services/productService";
-
+import {
+  getProducts,
+  Product,
+  searchProducts
+} from "../../services/productService";
 export default function ProductsPage() {
   const router = useRouter();
 
@@ -15,6 +18,7 @@ const [isLoading, setIsLoading] = useState(true);
 const [currentPage, setCurrentPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
 const [totalProducts, setTotalProducts] = useState(0);
+const [searchQuery, setSearchQuery] = useState("");
 const totalPages = Math.ceil(totalProducts / pageSize);
 const startItem =
   totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -26,23 +30,29 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
   };
 
   useEffect(() => {
-  const fetchProducts = async () => {
-    setIsLoading(true);
+  const timer = setTimeout(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
 
-    try {
-      const skip = (currentPage - 1) * pageSize;
+      try {
+        const skip = (currentPage - 1) * pageSize;
 
-      const data = await getProducts(pageSize, skip);
+        const data = searchQuery.trim()
+          ? await searchProducts(searchQuery.trim(), pageSize, skip)
+          : await getProducts(pageSize, skip);
 
-      setProducts(data.products);
-      setTotalProducts(data.total);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+        setProducts(data.products);
+        setTotalProducts(data.total);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  fetchProducts();
-}, [currentPage, pageSize]);
+    fetchProducts();
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [currentPage, pageSize, searchQuery]);
 
   return (
     <ProtectedRoute>
@@ -71,7 +81,8 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
             </div>
           ) : (
             <div className="hidden overflow-x-auto rounded-lg bg-white shadow-sm md:block">
-              <div className="grid gap-4 md:hidden">
+              {/* Mobile cards */}
+<div className="grid gap-4 md:hidden">
   {products.map((product) => (
     <div
       key={product.id}
@@ -119,6 +130,73 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
       </div>
     </div>
   ))}
+</div>
+
+{/* Desktop table */}
+<div className="hidden overflow-x-auto rounded-lg bg-white shadow-sm md:block">
+  <table className="w-full min-w-[800px] text-gray-800">
+    <thead className="bg-gray-100 text-gray-900">
+      <tr>
+        <th className="px-4 py-3 text-left font-semibold">
+          Image
+        </th>
+
+        <th className="px-4 py-3 text-left font-semibold">
+          Title
+        </th>
+
+        <th className="px-4 py-3 text-left font-semibold">
+          Category
+        </th>
+
+        <th className="px-4 py-3 text-left font-semibold">
+          Price
+        </th>
+
+        <th className="px-4 py-3 text-left font-semibold">
+          Rating
+        </th>
+
+        <th className="px-4 py-3 text-left font-semibold">
+          Stock
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {products.map((product) => (
+        <tr key={product.id} className="border-t">
+          <td className="px-4 py-3">
+            <img
+              src={product.thumbnail}
+              alt={product.title}
+              className="h-12 w-12 rounded object-cover"
+            />
+          </td>
+
+          <td className="px-4 py-3 font-medium text-gray-900">
+            {product.title}
+          </td>
+
+          <td className="px-4 py-3 text-gray-700">
+            {product.category}
+          </td>
+
+          <td className="px-4 py-3 text-gray-700">
+            ${product.price}
+          </td>
+
+          <td className="px-4 py-3 text-gray-700">
+            {product.rating}
+          </td>
+
+          <td className="px-4 py-3 text-gray-700">
+            {product.stock}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
 </div>
               <table className="w-full min-w-[800px] text-gray-800">
                 <thead className="bg-gray-100 text-gray-900">

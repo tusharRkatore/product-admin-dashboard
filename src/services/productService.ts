@@ -29,3 +29,14 @@ export const getProducts = async (
 
   return response.data;
 };
+export const searchProducts = async (
+  query: string,
+  limit = 10,
+  skip = 0
+): Promise<ProductsResponse> => {
+  const response = await api.get<ProductsResponse>(
+    `/products/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}`
+  );
+
+  return response.data;
+};
