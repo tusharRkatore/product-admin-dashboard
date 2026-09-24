@@ -5,9 +5,11 @@ import { useEffect, useRef, useState } from "react";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { removeToken } from "../../lib/auth";
 import {
+  getCategories,
   getProducts,
+  getProductsByCategory,
   Product,
-  searchProducts
+  searchProducts,
 } from "../../services/productService";
 export default function ProductsPage() {
   const router = useRouter();
@@ -20,6 +22,11 @@ const [pageSize, setPageSize] = useState(10);
 const [totalProducts, setTotalProducts] = useState(0);
 const [searchQuery, setSearchQuery] = useState("");
 const requestIdRef = useRef(0);
+
+const [categories, setCategories] = useState<
+  { slug: string; name: string; url: string }[]
+>([]);
+const [selectedCategory, setSelectedCategory] = useState("");
 const totalPages = Math.ceil(totalProducts / pageSize);
 const startItem =
   totalProducts === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -29,6 +36,20 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
     removeToken();
     router.replace("/login");
   };
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const data = await getCategories();
+      setCategories(data);
+    } catch (error) {
+      console.error("Failed to load categories:", error);
+    }
+  };
+
+  fetchCategories();
+}, []);
+
+
 
   useEffect(() => {
   const timer = setTimeout(() => {
@@ -39,10 +60,14 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
         const skip = (currentPage - 1) * pageSize;
         const requestId = ++requestIdRef.current;
 
-        const data = searchQuery.trim()
-          ? await searchProducts(searchQuery.trim(), pageSize, skip)
-          : await getProducts(pageSize, skip);
-          
+        const data = selectedCategory
+  ? await getProductsByCategory(selectedCategory, pageSize, skip)
+  : searchQuery.trim()
+    ? await searchProducts(searchQuery.trim(), pageSize, skip)
+    : await getProducts(pageSize, skip);
+          if (requestId !== requestIdRef.current) {
+  return;
+}
 
         setProducts(data.products);
         setTotalProducts(data.total);
@@ -63,19 +88,51 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
         <div className="mx-auto max-w-7xl">
           
           {/* Header */}
-          <div className="mb-6 flex items-center justify-between rounded-lg bg-white p-5 shadow-sm">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Products
-            </h1>
+         <div className="mb-6 flex flex-col gap-4 rounded-lg bg-white p-5 shadow-sm md:flex-row md:items-center md:justify-between">
+  <h1 className="text-2xl font-bold text-gray-900">
+    Products
+  </h1>
 
-            <button
-              type="button"
-              onClick={handleLogout}
-              className="rounded-lg bg-red-600 px-4 py-2 font-medium text-white transition hover:bg-red-700"
-            >
-              Logout
-            </button>
-          </div>
+  <div className="flex flex-col gap-3 sm:flex-row">
+    {/* Category */}
+    <select
+      value={selectedCategory}
+      onChange={(event) => {
+        setSelectedCategory(event.target.value);
+        setCurrentPage(1);
+      }}
+      className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+    >
+      <option value="">All Categories</option>
+
+     {categories.map((category) => (
+  <option key={category.slug} value={category.slug}>
+    {category.name}
+  </option>
+))}</select>
+
+    {/* Search */}
+    <input
+      type="search"
+      value={searchQuery}
+      onChange={(event) => {
+        setSearchQuery(event.target.value);
+        setCurrentPage(1);
+      }}
+      placeholder="Search products..."
+      className="rounded-lg border border-gray-300 px-4 py-2.5 text-sm text-gray-900 outline-none placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+    />
+
+    {/* Logout */}
+    <button
+      type="button"
+      onClick={handleLogout}
+      className="rounded-lg bg-red-600 px-4 py-2.5 font-medium text-white transition hover:bg-red-700"
+    >
+      Logout
+    </button>
+  </div>
+</div>
 
           {/* Products */}
           {isLoading ? (
@@ -204,7 +261,7 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
               <table className="w-full min-w-[800px] text-gray-800">
                 <thead className="bg-gray-100 text-gray-900">
                   <tr>
-                   <th className="px-4 py-3 text-left font-semibold">Image</th>
+<th className="px-4 py-3 text-left font-semibold">Image</th>
                     <th className="px-4 py-3 text-left font-semibold">Title</th>
                     <th className="px-4 py-3 text-left font-semibold">Category</th>
                     <th className="px-4 py-3 text-left font-semibold">Price</th>
