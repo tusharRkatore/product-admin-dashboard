@@ -102,6 +102,13 @@ useEffect(() => {
   <h1 className="text-2xl font-bold text-gray-900">
     Products
   </h1>
+  <button
+  type="button"
+  onClick={() => router.push("/products/create")}
+  className="rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-blue-700"
+>
+  Add Product
+</button>
 
   <div className="flex flex-col gap-3 sm:flex-row">
     {/* Category */}

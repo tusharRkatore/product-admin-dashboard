@@ -1,10 +1,11 @@
 "use client";
-
 import { useState } from "react";
-import { createProduct } from "../../../services/productService";
 
+import { useRouter } from "next/navigation";
+import { createProduct } from "../../../services/productService";
 export default function CreateProductPage() {
-  const [title, setTitle] = useState("");
+  const router = useRouter();
+const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -12,6 +13,8 @@ export default function CreateProductPage() {
   const [errorMessage, setErrorMessage] = useState("");
   const handleCreate = async () => {
   if (isSaving) return;
+
+
 
   setSuccessMessage("");
   setErrorMessage("");
@@ -53,7 +56,13 @@ export default function CreateProductPage() {
 };
 
   return (
-    <main className="p-6">
+    <main className="p-6"><button
+  type="button"
+  onClick={() => router.push("/products")}
+  className="mb-4 text-sm font-medium text-blue-600 hover:underline"
+>
+  ← Back to Products
+</button>
       <h1 className="text-2xl font-bold">
         Create Product
       </h1>

@@ -1,12 +1,14 @@
+import Link from "next/link";
 import DeleteProductButton from "../../../components/DeleteProductButton";
 import EditProductButton from "../../../components/EditProductButton";
 import { getProductById } from "../../../services/productService";
 ``
-
 interface ProductDetailsPageProps {
   params: Promise<{
     id: string;
   }>;
+
+  
 }
 export default async function ProductDetailsPage({
   params,
@@ -16,6 +18,7 @@ export default async function ProductDetailsPage({
 if (!/^\d+$/.test(id)) {
   return (
     <main className="p-6">
+      
       <div className="mx-auto max-w-2xl rounded-lg bg-white p-8 text-center shadow-sm">
         <h2 className="text-xl font-semibold text-gray-900">
           Invalid product ID
@@ -34,6 +37,12 @@ const product = await getProductById(id);
   return (
     <main className="p-6">
       <div className="mx-auto max-w-2xl rounded-lg bg-white p-8 text-center shadow-sm">
+        <Link
+          href="/products"
+          className="mb-6 inline-block text-sm font-medium text-blue-600 hover:underline"
+        >
+          ← Back to Products
+        </Link>
         <h2 className="text-xl font-semibold text-gray-900">
           Product not found
         </h2>
