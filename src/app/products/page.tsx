@@ -23,7 +23,7 @@ const [pageSize, setPageSize] = useState(10);
 const [totalProducts, setTotalProducts] = useState(0);
 const [searchQuery, setSearchQuery] = useState("");
 const requestIdRef = useRef(0);
-
+const [retryCount, setRetryCount] = useState(0);
 const [categories, setCategories] = useState<
   { slug: string; name: string; url: string }[]
 >([]);
@@ -37,7 +37,10 @@ const endItem = Math.min(currentPage * pageSize, totalProducts);
   const handleLogout = () => {
     removeToken();
     router.replace("/login");
-  };
+  };const handleRetry = () => {
+  setErrorMessage("");
+  setCurrentPage((page) => page);
+};
 useEffect(() => {
   const fetchCategories = async () => {
     try {
@@ -97,7 +100,14 @@ setErrorMessage("");
   }, 500);
 
   return () => clearTimeout(timer);
-}, [currentPage, pageSize, searchQuery, selectedCategory, sortBy]);
+}, [
+  currentPage,
+  pageSize,
+  searchQuery,
+  selectedCategory,
+  sortBy,
+  retryCount,
+]);
 
   return (
     <ProtectedRoute>
@@ -174,6 +184,14 @@ setErrorMessage("");
     <p className="text-sm font-medium text-red-600">
       {errorMessage}
     </p>
+
+    <button
+      type="button"
+      onClick={() => setRetryCount((count) => count + 1)}
+      className="mt-3 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+    >
+      Retry
+    </button>
   </div>
 )}
           {/* Products */}
