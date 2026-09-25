@@ -13,7 +13,38 @@ export default async function ProductDetailsPage({
 }: ProductDetailsPageProps) {
   const { id } = await params;
 
-  const product = await getProductById(id);
+if (!/^\d+$/.test(id)) {
+  return (
+    <main className="p-6">
+      <div className="mx-auto max-w-2xl rounded-lg bg-white p-8 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Invalid product ID
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-600">
+          Please provide a valid numeric product ID.
+        </p>
+      </div>
+    </main>
+  );
+}
+
+const product = await getProductById(id);
+  if (!product) {
+  return (
+    <main className="p-6">
+      <div className="mx-auto max-w-2xl rounded-lg bg-white p-8 text-center shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-900">
+          Product not found
+        </h2>
+
+        <p className="mt-2 text-sm text-gray-600">
+          The product you are looking for does not exist.
+        </p>
+      </div>
+    </main>
+  );
+}
 
   return (
     <main className="p-6"><img
