@@ -59,6 +59,13 @@ export const createProduct = async (
 
   return response.data;
 };
+export const deleteProduct = async (
+  id: string
+): Promise<Product> => {
+  const response = await api.delete<Product>(`/products/${id}`);
+
+  return response.data;
+};
 export const getProductsByCategory = async (
   category: string,
   limit = 10,
