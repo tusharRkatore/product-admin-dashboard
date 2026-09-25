@@ -17,7 +17,7 @@ export default function ProductsPage() {
 
 const [products, setProducts] = useState<Product[]>([]);
 const [isLoading, setIsLoading] = useState(true);
-
+const [errorMessage, setErrorMessage] = useState("");
 const [currentPage, setCurrentPage] = useState(1);
 const [pageSize, setPageSize] = useState(10);
 const [totalProducts, setTotalProducts] = useState(0);
@@ -57,6 +57,7 @@ useEffect(() => {
   const timer = setTimeout(() => {
     const fetchProducts = async () => {
       setIsLoading(true);
+setErrorMessage("");
 
       try {
         const skip = (currentPage - 1) * pageSize;
@@ -81,9 +82,15 @@ useEffect(() => {
 
         setProducts(data.products);
         setTotalProducts(data.total);
-      } finally {
-        setIsLoading(false);
-      }
+     } catch (error) {
+  if (error instanceof Error) {
+    setErrorMessage(error.message);
+  } else {
+    setErrorMessage("Unable to load products. Please try again.");
+  }
+} finally {
+  setIsLoading(false);
+}
     };
 
     fetchProducts();
@@ -162,7 +169,13 @@ useEffect(() => {
     </button>
   </div>
 </div>
-
+{errorMessage && (
+  <div className="mb-4 rounded-lg bg-red-50 p-4">
+    <p className="text-sm font-medium text-red-600">
+      {errorMessage}
+    </p>
+  </div>
+)}
           {/* Products */}
           {isLoading ? (
             <div className="rounded-lg bg-white p-6 shadow-sm">
