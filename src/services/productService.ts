@@ -95,7 +95,7 @@ export const searchProducts = async (
   skip = 0
 ): Promise<ProductsResponse> => {
   const response = await api.get<ProductsResponse>(
-    `/products/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}`
+    `/products/search?q=${encodeURIComponent(query)}&limit=${limit}&skip=${skip}&delay=2000`
   );
 
   return response.data;
