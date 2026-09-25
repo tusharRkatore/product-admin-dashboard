@@ -195,11 +195,21 @@ setErrorMessage("");
   </div>
 )}
           {/* Products */}
-          {isLoading ? (
-            <div className="rounded-lg bg-white p-6 shadow-sm">
-              <p className="text-gray-600">Loading products...</p>
-            </div>
-          ) : (
+          {/* Products */}
+{isLoading ? (
+  <div className="rounded-lg bg-white p-6 shadow-sm">
+    <p className="text-gray-600">Loading products...</p>
+  </div>
+) : products.length === 0 ? (
+  <div className="rounded-lg bg-white p-8 text-center shadow-sm">
+    <h2 className="text-lg font-semibold text-gray-900">
+      No products found
+    </h2>
+    <p className="mt-2 text-sm text-gray-600">
+      Try changing your search or filter.
+    </p>
+  </div>
+) : (
             <div className="hidden overflow-x-auto rounded-lg bg-white shadow-sm md:block">
               {/* Mobile cards */}
 <div className="grid gap-4 md:hidden">
