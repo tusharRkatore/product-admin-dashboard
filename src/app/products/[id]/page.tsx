@@ -1,7 +1,10 @@
 import Link from "next/link";
 import DeleteProductButton from "../../../components/DeleteProductButton";
 import EditProductButton from "../../../components/EditProductButton";
-import { getProductById } from "../../../services/productService";
+import {
+  getProductById,
+  Product,
+} from "../../../services/productService";
 ``
 interface ProductDetailsPageProps {
   params: Promise<{
@@ -32,7 +35,17 @@ if (!/^\d+$/.test(id)) {
   );
 }
 
-const product = await getProductById(id);
+let product: Product | null = null;
+
+try {
+  product = await getProductById(id);
+} catch (error) {
+  if (error instanceof Error && error.message.includes("not found")) {
+    product = null;
+  } else {
+    throw error;
+  }
+}
   if (!product) {
   return (
     <main className="p-6">
