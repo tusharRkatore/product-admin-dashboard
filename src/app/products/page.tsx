@@ -67,7 +67,12 @@ setErrorMessage("");
         const requestId = ++requestIdRef.current;
 
         const data = selectedCategory
-  ? await getProductsByCategory(selectedCategory, pageSize, skip)
+ ? await getProductsByCategory(
+      selectedCategory,
+      pageSize,
+      skip,
+      sortBy as "price" | "rating" | "title" | undefined
+    )
   : searchQuery.trim()
     ? await searchProducts(searchQuery.trim(), pageSize, skip)
     : sortBy

@@ -69,11 +69,12 @@ export const deleteProduct = async (
 export const getProductsByCategory = async (
   category: string,
   limit = 10,
-  skip = 0
-): Promise<ProductsResponse> => {
+  skip = 0,
+  sortBy?: "price" | "rating" | "title"
+)
+: Promise<ProductsResponse> => {
   const response = await api.get<ProductsResponse>(
-    `/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}`
-  );
+`/products/category/${encodeURIComponent(category)}?limit=${limit}&skip=${skip}${sortBy ? `&sortBy=${sortBy}&order=asc` : ""}`  );
 
   return response.data;
 };
