@@ -1,7 +1,6 @@
 
+import EditProductButton from "../../../components/EditProductButton";
 import { getProductById } from "../../../services/productService";
-
-
 
 interface ProductDetailsPageProps {
   params: Promise<{
@@ -33,7 +32,10 @@ export default async function ProductDetailsPage({
     {product.category}
   </span>
 </p>
-<div className="mt-6 grid gap-4 sm:grid-cols-3">
+<div className="mt-6 grid gap-4 sm:grid-cols-3"><div className="mt-6">
+ <EditProductButton productId={id} />
+</div>
+
   <div className="rounded-lg bg-gray-100 p-4">
     <p className="text-sm text-gray-500">Price</p>
     <p className="mt-1 text-xl font-semibold text-gray-900">

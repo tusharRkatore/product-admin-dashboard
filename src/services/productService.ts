@@ -36,8 +36,18 @@ export const getProductById = async (
 
   return response.data;
 };
+export const updateProduct = async (
+  id: string,
+  data: {
+    title: string;
+    price: number;
+    description: string;
+  }
+): Promise<Product> => {
+  const response = await api.put<Product>(`/products/${id}`, data);
 
-
+  return response.data;
+};
 export const getProductsByCategory = async (
   category: string,
   limit = 10,
