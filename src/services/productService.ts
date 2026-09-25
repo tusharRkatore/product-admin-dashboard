@@ -48,6 +48,17 @@ export const updateProduct = async (
 
   return response.data;
 };
+export const createProduct = async (
+  data: {
+    title: string;
+    price: number;
+    description: string;
+  }
+): Promise<Product> => {
+  const response = await api.post<Product>("/products/add", data);
+
+  return response.data;
+};
 export const getProductsByCategory = async (
   category: string,
   limit = 10,
